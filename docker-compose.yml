@@ -1,0 +1,72 @@
+version: '3.7'
+
+volumes:
+  spring-security-jpa-demo-postgres-data:
+    name: spring-security-jpa-demo-postgres-data
+    driver: local
+  spring-security-jpa-demo-pgadmin-data:
+    name: spring-security-jpa-demo-pgadmin-data
+    driver: local
+
+
+networks:
+  spring-security-jpa-demo:
+    name: spring-security-jpa-demo
+    driver: bridge
+
+services:
+
+  postgres:
+    image: postgres:14.1-alpine
+    volumes:
+      - spring-security-jpa-demo-postgres-data:/var/lib/postgresql/data
+      - ./docker/postgres:/docker-entrypoint-initdb.d
+    environment:
+      - POSTGRES_PASSWORD=postgres
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready" ]
+      interval: 30s
+      timeout: 5s
+    networks:
+      - spring-security-jpa-demo
+    ports:
+      - "5432:5432"
+    hostname: spring-security-jpa-demo-postgres
+
+  pgadmin:
+    image: dpage/pgadmin4
+    restart: always
+    ports:
+      - "15432:80"
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=admin@demo.hr
+      - PGADMIN_DEFAULT_PASSWORD=admin
+      - PGADMIN_LISTEN_ADDRESS=0.0.0.0
+    healthcheck:
+      test: [ "CMD-SHELL", "wget --spider http://localhost/misc/ping || exit 1" ]
+      interval: 1m
+      timeout: 30s
+    networks:
+      - spring-security-jpa-demo
+    volumes:
+      - spring-security-jpa-demo-pgadmin-data:/var/lib/pgadmin
+      - ./docker/pgadmin/servers.json:/pgadmin4/servers.json
+    depends_on:
+      - postgres
+
+  backend-service:
+    build: .
+    image: backend-service
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/demo
+    healthcheck:
+      test: "curl --fail --silent http://localhost:8080/actuator/health | grep UP || exit 1"
+      interval: 30s
+      timeout: 5s
+    depends_on:
+      - postgres
+    networks:
+      - spring-security-jpa-demo
+    ports:
+      - "8080:8080"
+    restart: always
