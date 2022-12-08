@@ -1,6 +1,7 @@
 package com.example.springsecurityjpademo.service;
 
 import com.example.springsecurityjpademo.dto.UserProfileDto;
+import com.example.springsecurityjpademo.mapper.UserMapper;
 import com.example.springsecurityjpademo.model.Role;
 import com.example.springsecurityjpademo.model.User;
 import com.example.springsecurityjpademo.repository.UserRepository;
@@ -18,6 +19,8 @@ public class UserService implements UserDetailsService {
 
     private final UserRepository userRepository;
 
+    private final UserMapper userMapper;
+
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         return userRepository
@@ -26,12 +29,7 @@ public class UserService implements UserDetailsService {
     }
 
     public UserProfileDto getUserProfile(User user) {
-        return new UserProfileDto(
-                user.getId(),
-                user.getUsername(),
-                user.getRoles().stream().map(Role::getName).collect(Collectors.toList()),
-                user.getStatus()
-        );
+        return userMapper.toUserProfileDto(user);
     }
 
 }
