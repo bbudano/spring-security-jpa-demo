@@ -1,35 +1,44 @@
 package com.example.springsecurityjpademo.service;
 
-import com.example.springsecurityjpademo.dto.UserProfileDto;
-import com.example.springsecurityjpademo.mapper.UserMapper;
-import com.example.springsecurityjpademo.model.Role;
+import com.example.springsecurityjpademo.dto.CreateUserRequest;
 import com.example.springsecurityjpademo.model.User;
+import com.example.springsecurityjpademo.repository.RoleRepository;
 import com.example.springsecurityjpademo.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
-import java.util.stream.Collectors;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
-public class UserService implements UserDetailsService {
+public class UserService {
 
     private final UserRepository userRepository;
 
-    private final UserMapper userMapper;
+    private final RoleRepository roleRepository;
 
-    @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        return userRepository
-                .findByEmail(username)
-                .orElseThrow(() -> new UsernameNotFoundException("Username not found: " + username));
-    }
+    private final PasswordEncoder passwordEncoder;
 
-    public UserProfileDto getUserProfile(User user) {
-        return userMapper.toUserProfileDto(user);
+    @Transactional
+    public User createUser(CreateUserRequest request) {
+        User user = new User();
+        user.setEmail(request.getEmail());
+        user.setPassword(passwordEncoder.encode(request.getPassword()));
+        user.setStatus(request.getStatus());
+        userRepository.save(user);
+
+        request.getRoles().forEach(roleId -> {
+            var role = roleRepository
+                    .findById(roleId)
+                    .orElseThrow(() -> new RuntimeException("Role not found."));
+
+            user.getRoles().add(role);
+        });
+
+        return userRepository.saveAndFlush(user);
     }
 
 }

@@ -1,5 +1,6 @@
 package com.example.springsecurityjpademo.mapper;
 
+import com.example.springsecurityjpademo.dto.UserDto;
 import com.example.springsecurityjpademo.dto.UserProfileDto;
 import com.example.springsecurityjpademo.model.Role;
 import com.example.springsecurityjpademo.model.User;
@@ -14,6 +15,10 @@ public interface UserMapper {
     @Mapping(target = "roles", source = "roles", qualifiedByName = "mapRoleNames")
     @Mapping(target = "email", expression = "java(user.getUsername())")
     UserProfileDto toUserProfileDto(User user);
+
+    @Mapping(target = "roles", source = "roles", qualifiedByName = "mapRoleNames")
+    @Mapping(target = "email", expression = "java(user.getUsername())")
+    UserDto toUserDto(User user);
 
     @Named("mapRoleNames")
     default List<String> mapRoleNames(List<Role> roles) {
