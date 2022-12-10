@@ -7,6 +7,8 @@ import com.example.springsecurityjpademo.mapper.UserMapper;
 import com.example.springsecurityjpademo.model.User;
 import com.example.springsecurityjpademo.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
@@ -23,6 +25,24 @@ public class UserController {
     @PostMapping
     public ResponseEntity<UserDto> createUser(@RequestBody CreateUserRequest request) {
         var user = userService.createUser(request);
+
+        return ResponseEntity
+                .ok()
+                .body(userMapper.toUserDto(user));
+    }
+
+    @GetMapping
+    public ResponseEntity<Page<UserDto>> getUsers(Pageable pageable) {
+        return ResponseEntity
+                .ok()
+                .body(userService
+                        .getUsers(pageable)
+                        .map(userMapper::toUserDto));
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<UserDto> getUser(@PathVariable Long id) {
+        var user = userService.getUser(id);
 
         return ResponseEntity
                 .ok()

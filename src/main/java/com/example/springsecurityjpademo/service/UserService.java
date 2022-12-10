@@ -5,9 +5,8 @@ import com.example.springsecurityjpademo.model.User;
 import com.example.springsecurityjpademo.repository.RoleRepository;
 import com.example.springsecurityjpademo.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -39,6 +38,16 @@ public class UserService {
         });
 
         return userRepository.saveAndFlush(user);
+    }
+
+    public Page<User> getUsers(Pageable pageable) {
+        return userRepository.findAll(pageable);
+    }
+
+    public User getUser(Long id) {
+        return userRepository
+                .findById(id)
+                .orElseThrow(() -> new RuntimeException("User not found."));
     }
 
 }

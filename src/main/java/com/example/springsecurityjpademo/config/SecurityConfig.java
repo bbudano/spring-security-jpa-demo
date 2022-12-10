@@ -1,11 +1,9 @@
 package com.example.springsecurityjpademo.config;
 
 import com.example.springsecurityjpademo.service.UserDetailsServiceImpl;
-import com.example.springsecurityjpademo.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -31,7 +29,8 @@ public class SecurityConfig {
         return http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeRequests(auth -> auth
-                        .antMatchers(HttpMethod.POST, "/api/v1/users").hasRole("ADMIN")
+                        .antMatchers("/api/v1/users/profile").authenticated()
+                        .antMatchers("/api/v1/users/**").hasRole("ADMIN")
                         .anyRequest().authenticated())
                 .userDetailsService(userDetailsService)
                 .formLogin(Customizer.withDefaults())
