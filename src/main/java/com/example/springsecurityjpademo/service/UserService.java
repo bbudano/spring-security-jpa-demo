@@ -1,6 +1,6 @@
 package com.example.springsecurityjpademo.service;
 
-import com.example.springsecurityjpademo.dto.CreateUserRequest;
+import com.example.springsecurityjpademo.dto.CreateOrUpdateUserRequest;
 import com.example.springsecurityjpademo.model.User;
 import com.example.springsecurityjpademo.repository.RoleRepository;
 import com.example.springsecurityjpademo.repository.UserRepository;
@@ -22,14 +22,14 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
 
     @Transactional
-    public User createUser(CreateUserRequest request) {
-        User user = new User();
-        user.setEmail(request.getEmail());
-        user.setPassword(passwordEncoder.encode(request.getPassword()));
-        user.setStatus(request.getStatus());
+    public User createUser(CreateOrUpdateUserRequest createUserRequest) {
+        var user = new User();
+        user.setEmail(createUserRequest.getEmail());
+        user.setPassword(passwordEncoder.encode(createUserRequest.getPassword()));
+        user.setStatus(createUserRequest.getStatus());
         userRepository.save(user);
 
-        request.getRoles().forEach(roleId -> {
+        createUserRequest.getRoles().forEach(roleId -> {
             var role = roleRepository
                     .findById(roleId)
                     .orElseThrow(() -> new RuntimeException("Role not found."));
@@ -40,14 +40,37 @@ public class UserService {
         return userRepository.saveAndFlush(user);
     }
 
+    @Transactional(readOnly = true)
     public Page<User> getUsers(Pageable pageable) {
         return userRepository.findAll(pageable);
     }
 
+    @Transactional(readOnly = true)
     public User getUser(Long id) {
         return userRepository
                 .findById(id)
                 .orElseThrow(() -> new RuntimeException("User not found."));
     }
+
+    @Transactional
+    public User updateUser(Long id, CreateOrUpdateUserRequest updateUserRequest) {
+        var user = getUser(id);
+
+        user.setEmail(updateUserRequest.getEmail());
+        user.setPassword(passwordEncoder.encode(updateUserRequest.getPassword()));
+        user.setStatus(updateUserRequest.getStatus());
+
+        updateUserRequest.getRoles().forEach(roleId -> {
+            var role = roleRepository
+                    .findById(roleId)
+                    .orElseThrow(() -> new RuntimeException("Role not found."));
+
+            user.getRoles().add(role);
+        });
+
+        return user;
+    }
+
+
 
 }

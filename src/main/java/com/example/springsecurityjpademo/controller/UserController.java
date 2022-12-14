@@ -1,6 +1,6 @@
 package com.example.springsecurityjpademo.controller;
 
-import com.example.springsecurityjpademo.dto.CreateUserRequest;
+import com.example.springsecurityjpademo.dto.CreateOrUpdateUserRequest;
 import com.example.springsecurityjpademo.dto.UserDto;
 import com.example.springsecurityjpademo.dto.UserProfileDto;
 import com.example.springsecurityjpademo.mapper.UserMapper;
@@ -12,6 +12,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 @RestController
 @RequestMapping(path = "/api/v1/users")
@@ -22,12 +23,27 @@ public class UserController {
 
     private final UserMapper userMapper;
 
-    @PostMapping
-    public ResponseEntity<UserDto> createUser(@RequestBody CreateUserRequest request) {
-        var user = userService.createUser(request);
+    @GetMapping("/profile")
+    public ResponseEntity<UserProfileDto> getUserProfile(Authentication authentication) {
+        var user = (User) authentication.getPrincipal();
 
         return ResponseEntity
                 .ok()
+                .body(userMapper.toUserProfileDto(user));
+    }
+
+    @PostMapping
+    public ResponseEntity<UserDto> createUser(@RequestBody CreateOrUpdateUserRequest createUserRequest) {
+        var user = userService.createUser(createUserRequest);
+
+        var location = ServletUriComponentsBuilder
+                .fromCurrentRequest()
+                .path("/{id}")
+                .buildAndExpand(user.getId())
+                .toUri();
+
+        return ResponseEntity
+                .created(location)
                 .body(userMapper.toUserDto(user));
     }
 
@@ -49,13 +65,14 @@ public class UserController {
                 .body(userMapper.toUserDto(user));
     }
 
-    @GetMapping("/profile")
-    public ResponseEntity<UserProfileDto> getUserProfile(Authentication authentication) {
-        var user = (User) authentication.getPrincipal();
+    @PutMapping("/{id}")
+    public ResponseEntity<UserDto> updateUser(@PathVariable Long id,
+                                              @RequestBody CreateOrUpdateUserRequest updateUserRequest) {
+        var user = userService.updateUser(id, updateUserRequest);
 
         return ResponseEntity
                 .ok()
-                .body(userMapper.toUserProfileDto(user));
+                .body(userMapper.toUserDto(user));
     }
 
 }
