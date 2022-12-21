@@ -1,6 +1,9 @@
 version: '3.7'
 
 volumes:
+  spring-security-jpa-demo-redis-data:
+    name: spring-security-jpa-demo-redis-data
+    driver: local
   spring-security-jpa-demo-postgres-data:
     name: spring-security-jpa-demo-postgres-data
     driver: local
@@ -15,6 +18,17 @@ networks:
     driver: bridge
 
 services:
+
+  redis:
+    image: redis:5-alpine
+    volumes:
+      - spring-security-jpa-demo-redis-data:/data
+    command: redis-server --requirepass redis
+    networks:
+      - spring-security-jpa-demo
+    restart: always
+    ports:
+      - "6379:6379"
 
   postgres:
     image: postgres:14.1-alpine
@@ -65,6 +79,7 @@ services:
       timeout: 5s
     depends_on:
       - postgres
+      - redis
     networks:
       - spring-security-jpa-demo
     ports:

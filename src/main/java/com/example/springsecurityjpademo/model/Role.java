@@ -3,14 +3,13 @@ package com.example.springsecurityjpademo.model;
 import lombok.Data;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.List;
+import java.io.Serializable;
 
 @Data
 @Entity
 @Table(name = "roles", uniqueConstraints = {
         @UniqueConstraint(name = "role_name_unique", columnNames = { "name" }) })
-public class Role {
+public class Role implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "roles_id_seq_generator")
