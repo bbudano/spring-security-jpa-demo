@@ -1,6 +1,6 @@
 package com.example.springsecurityjpademo.service;
 
-import com.example.springsecurityjpademo.dto.CreateOrUpdateUserRequest;
+import com.example.springsecurityjpademo.dto.CreateUserRequest;
 import com.example.springsecurityjpademo.model.User;
 import com.example.springsecurityjpademo.repository.RoleRepository;
 import com.example.springsecurityjpademo.repository.UserRepository;
@@ -22,16 +22,16 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
 
     @Transactional
-    public User createUser(CreateOrUpdateUserRequest createUserRequest) {
+    public User createUser(CreateUserRequest createUserRequest) {
         var user = new User();
         user.setEmail(createUserRequest.getEmail());
         user.setPassword(passwordEncoder.encode(createUserRequest.getPassword()));
         user.setStatus(createUserRequest.getStatus());
         userRepository.save(user);
 
-        createUserRequest.getRoles().forEach(roleId -> {
+        createUserRequest.getRoles().forEach(roleName -> {
             var role = roleRepository
-                    .findById(roleId)
+                    .findByName(roleName)
                     .orElseThrow(() -> new RuntimeException("Role not found."));
 
             user.getRoles().add(role);
@@ -51,26 +51,5 @@ public class UserService {
                 .findById(id)
                 .orElseThrow(() -> new RuntimeException("User not found."));
     }
-
-    @Transactional
-    public User updateUser(Long id, CreateOrUpdateUserRequest updateUserRequest) {
-        var user = getUser(id);
-
-        user.setEmail(updateUserRequest.getEmail());
-        user.setPassword(passwordEncoder.encode(updateUserRequest.getPassword()));
-        user.setStatus(updateUserRequest.getStatus());
-
-        updateUserRequest.getRoles().forEach(roleId -> {
-            var role = roleRepository
-                    .findById(roleId)
-                    .orElseThrow(() -> new RuntimeException("Role not found."));
-
-            user.getRoles().add(role);
-        });
-
-        return user;
-    }
-
-
 
 }

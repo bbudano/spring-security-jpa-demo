@@ -30,7 +30,7 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeRequests(auth -> auth
                         .antMatchers("/api/v1/users/profile").authenticated()
-                        .antMatchers("/api/v1/users/**").hasRole("ADMIN")
+                        .antMatchers("/api/v1/users/**", "/api/v1/roles/**").hasRole("ADMIN")
                         .anyRequest().authenticated())
                 .userDetailsService(userDetailsService)
                 .formLogin(Customizer.withDefaults())

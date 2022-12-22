@@ -40,6 +40,8 @@ services:
       - spring-security-jpa-demo
     ports:
       - "8081:8081"
+    depends_on:
+      - redis
 
   postgres:
     image: postgres:14.1-alpine

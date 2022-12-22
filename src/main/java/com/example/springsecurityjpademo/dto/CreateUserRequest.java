@@ -6,7 +6,7 @@ import lombok.Data;
 import java.util.List;
 
 @Data
-public class CreateOrUpdateUserRequest {
+public class CreateUserRequest {
 
     private String email;
 
@@ -14,6 +14,6 @@ public class CreateOrUpdateUserRequest {
 
     private User.Status status;
 
-    private List<Long> roles;
+    private List<String> roles;
 
 }
