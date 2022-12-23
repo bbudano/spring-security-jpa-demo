@@ -1,6 +1,7 @@
 package com.example.springsecurityjpademo.model;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -9,6 +10,7 @@ import java.io.Serializable;
 @Entity
 @Table(name = "roles", uniqueConstraints = {
         @UniqueConstraint(name = "role_name_unique", columnNames = { "name" }) })
+@NoArgsConstructor
 public class Role implements Serializable {
 
     @Id
@@ -20,5 +22,9 @@ public class Role implements Serializable {
 
     @Column(name = "name", nullable = false)
     private String name;
+
+    public Role(String name) {
+        this.name = name;
+    }
 
 }
