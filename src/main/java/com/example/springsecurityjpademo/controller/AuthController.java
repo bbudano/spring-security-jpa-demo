@@ -9,6 +9,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
+
 @RestController
 @RequestMapping(path = "/api/v1/auth")
 @RequiredArgsConstructor
@@ -29,6 +31,13 @@ public class AuthController {
         var user = (User) authentication.getPrincipal();
 
         authService.changePassword(user, changePasswordRequest);
+    }
+
+    @PostMapping("/logout")
+    public void logout(Authentication authentication, HttpServletRequest httpServletRequest) {
+        var user = (User) authentication.getPrincipal();
+
+        authService.logout(user, httpServletRequest);
     }
 
 }

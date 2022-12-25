@@ -9,6 +9,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import javax.servlet.http.HttpServletRequest;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -32,7 +34,11 @@ public class AuthService {
         user.setPassword(passwordEncoder.encode(changePasswordRequest.getNewPassword()));
         userRepository.save(user);
 
-        redisSessionHandler.removeAllUsersSession(user.getUsername());
+        redisSessionHandler.removeAllUserSessions(user.getUsername());
+    }
+
+    public void logout(User user, HttpServletRequest httpServletRequest) {
+        redisSessionHandler.removeUserSession(user.getUsername(), httpServletRequest.getSession().getId());
     }
 
 }

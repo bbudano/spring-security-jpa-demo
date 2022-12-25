@@ -13,10 +13,17 @@ public class RedisSessionHandler {
 
     private final FindByIndexNameSessionRepository<? extends Session> sessionRepository;
 
-    public void removeAllUsersSession(String principalName) {
+    public void removeAllUserSessions(String principalName) {
         log.debug("Removing all sessions for user: {}", principalName);
         sessionRepository.findByPrincipalName(principalName)
                 .forEach((id, session) -> sessionRepository.deleteById(session.getId()));
+    }
+
+    public void removeUserSession(String principalName, String sessionId) {
+        var sessionOptional = sessionRepository.findByPrincipalName(principalName)
+                .values().stream().filter(session -> sessionId.equals(session.getId())).findFirst();
+
+        sessionOptional.ifPresent(session -> sessionRepository.deleteById(session.getId()));
     }
 
 }
