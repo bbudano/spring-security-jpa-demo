@@ -31,6 +31,7 @@ public class SecurityConfig {
                 .authorizeRequests(auth -> auth
                         .antMatchers("/api/v1/users/profile").authenticated()
                         .antMatchers("/api/v1/users/**", "/api/v1/roles/**").hasRole("ADMIN")
+                        .antMatchers("/actuator/**").permitAll()
                         .anyRequest().authenticated())
                 .userDetailsService(userDetailsService)
                 .formLogin(Customizer.withDefaults())
