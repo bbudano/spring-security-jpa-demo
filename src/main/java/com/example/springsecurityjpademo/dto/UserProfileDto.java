@@ -5,8 +5,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
-
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -16,7 +14,7 @@ public class UserProfileDto {
 
     private String email;
 
-    private List<String> roles;
+    private User.Role role;
 
     private User.Status status;
 

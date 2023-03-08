@@ -3,8 +3,6 @@ package com.example.springsecurityjpademo.dto;
 import com.example.springsecurityjpademo.model.User;
 import lombok.Data;
 
-import java.util.List;
-
 @Data
 public class UserDto {
 
@@ -16,6 +14,6 @@ public class UserDto {
 
     private User.Status status;
 
-    private List<String> roles;
+    private User.Role role;
 
 }

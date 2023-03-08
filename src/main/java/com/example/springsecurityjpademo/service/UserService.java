@@ -2,7 +2,6 @@ package com.example.springsecurityjpademo.service;
 
 import com.example.springsecurityjpademo.dto.CreateUserRequest;
 import com.example.springsecurityjpademo.model.User;
-import com.example.springsecurityjpademo.repository.RoleRepository;
 import com.example.springsecurityjpademo.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -17,8 +16,6 @@ public class UserService {
 
     private final UserRepository userRepository;
 
-    private final RoleRepository roleRepository;
-
     private final PasswordEncoder passwordEncoder;
 
     @Transactional
@@ -26,16 +23,9 @@ public class UserService {
         var user = new User();
         user.setEmail(createUserRequest.getEmail());
         user.setPassword(passwordEncoder.encode(createUserRequest.getPassword()));
+        user.setRole(createUserRequest.getRole());
         user.setStatus(createUserRequest.getStatus());
         userRepository.save(user);
-
-        createUserRequest.getRoles().forEach(roleName -> {
-            var role = roleRepository
-                    .findByName(roleName)
-                    .orElseThrow(() -> new RuntimeException("Role not found."));
-
-            user.getRoles().add(role);
-        });
 
         return userRepository.saveAndFlush(user);
     }
