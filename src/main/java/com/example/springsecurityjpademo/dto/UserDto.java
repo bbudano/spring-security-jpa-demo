@@ -10,8 +10,6 @@ public class UserDto {
 
     private String email;
 
-    private String password;
-
     private User.Status status;
 
     private User.Role role;

@@ -22,6 +22,7 @@ public class User implements UserDetails {
     @Getter
     private Long id;
 
+    @Getter
     @Setter
     @Column(name = "email", nullable = false)
     private String email;
@@ -30,6 +31,7 @@ public class User implements UserDetails {
     @Column(name = "password", nullable = false)
     private String password;
 
+    @Getter
     @Setter
     @Enumerated(EnumType.STRING)
     @Column(name = "role", nullable = false)

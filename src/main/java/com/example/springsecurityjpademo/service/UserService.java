@@ -1,7 +1,8 @@
 package com.example.springsecurityjpademo.service;
 
 import com.example.springsecurityjpademo.dto.CreateUserRequest;
-import com.example.springsecurityjpademo.model.User;
+import com.example.springsecurityjpademo.dto.UserDto;
+import com.example.springsecurityjpademo.mapper.UserMapper;
 import com.example.springsecurityjpademo.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -16,30 +17,35 @@ public class UserService {
 
     private final UserRepository userRepository;
 
+    private final UserMapper userMapper;
+
     private final PasswordEncoder passwordEncoder;
 
     @Transactional
-    public User createUser(CreateUserRequest createUserRequest) {
-        var user = new User();
-        user.setEmail(createUserRequest.getEmail());
+    public UserDto createUser(CreateUserRequest createUserRequest) {
+        var user = userMapper.toUser(createUserRequest);
+
         user.setPassword(passwordEncoder.encode(createUserRequest.getPassword()));
-        user.setRole(createUserRequest.getRole());
-        user.setStatus(createUserRequest.getStatus());
-        userRepository.save(user);
 
-        return userRepository.saveAndFlush(user);
+        userRepository.saveAndFlush(user);
+
+        return userMapper.toUserDto(user);
     }
 
     @Transactional(readOnly = true)
-    public Page<User> getUsers(Pageable pageable) {
-        return userRepository.findAll(pageable);
-    }
-
-    @Transactional(readOnly = true)
-    public User getUser(Long id) {
+    public Page<UserDto> getUsers(Pageable pageable) {
         return userRepository
+                .findAll(pageable)
+                .map(userMapper::toUserDto);
+    }
+
+    @Transactional(readOnly = true)
+    public UserDto getUser(Long id) {
+        var user = userRepository
                 .findById(id)
                 .orElseThrow(() -> new RuntimeException("User not found."));
+
+        return userMapper.toUserDto(user);
     }
 
 }
