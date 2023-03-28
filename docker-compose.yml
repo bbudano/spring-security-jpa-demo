@@ -20,7 +20,7 @@ networks:
 services:
 
   redis:
-    image: redis:5-alpine
+    image: redis:latest
     volumes:
       - spring-security-jpa-demo-redis-data:/data
     command: redis-server --requirepass redis

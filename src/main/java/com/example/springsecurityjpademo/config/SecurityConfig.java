@@ -28,10 +28,10 @@ public class SecurityConfig {
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
                 .csrf(AbstractHttpConfigurer::disable)
-                .authorizeRequests(auth -> auth
-                        .antMatchers("/api/v1/users/profile").authenticated()
-                        .antMatchers("/api/v1/users/**", "/api/v1/roles/**").hasRole("ADMIN")
-                        .antMatchers("/actuator/**").permitAll()
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/api/v1/users/profile").authenticated()
+                        .requestMatchers("/api/v1/users/**", "/api/v1/roles/**").hasRole("ADMIN")
+                        .requestMatchers("/actuator/**").permitAll()
                         .anyRequest().authenticated())
                 .userDetailsService(userDetailsService)
                 .formLogin(Customizer.withDefaults())

@@ -5,11 +5,10 @@ import com.example.springsecurityjpademo.dto.UserProfileDto;
 import com.example.springsecurityjpademo.mapper.UserMapper;
 import com.example.springsecurityjpademo.model.User;
 import com.example.springsecurityjpademo.service.AuthService;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
-
-import javax.servlet.http.HttpServletRequest;
 
 @RestController
 @RequestMapping(path = "/api/v1/auth")
