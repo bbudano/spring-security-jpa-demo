@@ -17,7 +17,9 @@ import jakarta.servlet.http.HttpServletRequest;
 public class AuthService {
 
     private final UserRepository userRepository;
+
     private final PasswordEncoder passwordEncoder;
+
     private final RedisSessionHandler redisSessionHandler;
 
     public void changePassword(User user, ChangePasswordRequest changePasswordRequest) {
