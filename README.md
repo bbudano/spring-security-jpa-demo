@@ -18,3 +18,21 @@ Navigate to:
 ```
 http://localhost:8081
 ```
+
+## Login
+Upon visiting a protected resource:
+```
+http://localhost:8080/api/v1/auth/profile
+```
+You will be redirected to spring security form login where you can authenticate.
+Liquibase will insert 2 users.
+
+```
+role: ROLE_ADMIN
+password: admin
+username: admin@demo.hr
+------------------------
+role: ROLE_USER
+username: user@demo.hr
+password: user
+```
