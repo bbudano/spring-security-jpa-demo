@@ -29,8 +29,8 @@ Liquibase will insert 2 users.
 
 ```
 role: ROLE_ADMIN
-password: admin
 username: admin@demo.hr
+password: admin
 ------------------------
 role: ROLE_USER
 username: user@demo.hr
